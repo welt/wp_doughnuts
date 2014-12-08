@@ -232,7 +232,6 @@ Chart.defaults.global = {
 
 				t.doughnuts.push(oInstance); // keep a record of all the instances, not currently used
 
-				console.log('length = ' + oInstance.cval.length);
 				// process the doughnut's data
 				//
 				$.each(oInstance.cval, function( index, value ) {
@@ -244,7 +243,6 @@ Chart.defaults.global = {
 					obj["color"] = colour;
 					obj["highlight"] = t.cCLUT[index%6]["highlight"];
 					obj["label"] = "#282828";
-					console.dir(oInstance.doughnutData);
 					oInstance.doughnutData.push(obj);
 				});
 
@@ -287,10 +285,12 @@ $( document ).ready(function() {
 });
 
 $( window ).load(function() {
+
 	// initialise doughnut production
 	//
 	ChartJSDoughnuts.doughnut.oSelf = ChartJSDoughnuts.oBody.find('.doughnut');
 	if ( ChartJSDoughnuts.doughnut.oSelf ) {
 		ChartJSDoughnuts.doughnut.fInit();
 	};
+
 });
