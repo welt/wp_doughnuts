@@ -5,7 +5,7 @@ Plugin URI: https://github.com/welt/wp_doughnuts.git
 Author: welt
 Author URI: github.com/welt
 Description: Loads Chart.js [http://www.chartjs.org], provides Doughnut shortcode. Usage: [donut id="caramel" type="large" cvals="32000, 600, 1000, 200"]some donut[/donut]. Needs unique ID for each doughnut. cvals: one for each value to represent in the ring. Type: `small` or `large` (default). Text appears in a div underneath Canvas.
-Version: 1.0
+Version: 1.0.1
 */
 
 //
@@ -13,25 +13,41 @@ Version: 1.0
 // so we place the user text in a div underneath the Canvas for now
 //
 
-// filter name: rw_wp_doughnut_html
+// filters: rw_wp_doughnut_html, rw_wp_doughnut_charts_load_js
 
 // Restrictions
 defined('ABSPATH') or die("&iexcl;Vous ne pouvez pas accéder directement à ce truc l&agrave;!");
 
-/* Constants */
+// Constants 
 define ( 'RW_WP_DOUGHNUT_CHARTS_VERSION', '1.0' );
 define ( 'RW_WP_DOUGHNUT_CHARTS_DIR', plugin_dir_path(__FILE__) );
 define ( 'RW_WP_DOUGHNUT_CHARTS_URL', plugins_url().'/rw_wp_doughnuts' );
+if ( ! defined( 'RW_WP_DOUGHNUT_CHARTS_LOAD_JS' ) ) {
+	define( 'RW_WP_DOUGHNUT_CHARTS_LOAD_JS', true );
+};
 
 if ( ! function_exists( 'rw_wp_doughnut_chart_script_loader' ) ) :
+	// Example filter usage, in functions.php
+	// `add_filter( 'rw_wp_doughnut_charts_load_js', '__return_false' );`
+	//
+	function rw_wp_doughnut_charts_load_js() {
+		return apply_filters( 'rw_wp_doughnut_charts_load_js', RW_WP_DOUGHNUT_CHARTS_LOAD_JS );
+	}
 	function rw_wp_doughnut_chart_script_loader() {
+		//
+		// load plugin default scripts
+		// use rw_wp_doughnut_charts_load_js filter if loading copies of these scripts from theme instead
+		//
 		wp_register_script( 'chartjs_script', RW_WP_DOUGHNUT_CHARTS_URL.'/Chart.min.js', false, RW_WP_DOUGHNUT_CHARTS_VERSION, true);
-		wp_enqueue_script( 'chartjs_script' );
 		wp_register_script( 'doughnuts', RW_WP_DOUGHNUT_CHARTS_URL. '/rw_wp_doughnuts.js', array( 'jquery', 'chartjs_script'), RW_WP_DOUGHNUT_CHARTS_VERSION, true );
-		wp_enqueue_script( 'doughnuts' );
+
+		if ( hl_avansee_charts_load_js() ) {
+			wp_enqueue_script( 'chartjs_script' );
+			wp_enqueue_script( 'doughnuts' );
+		};
 	}
 	if ( !is_admin() ) {
-		add_action('wp_enqueue_scripts', 'rw_wp_doughnut_chart_script_loader');
+		add_action('wp_enqueue_scripts', 'rw_wp_doughnut_chart_script_loader', 99);
 	}
 endif;
 
